@@ -36,6 +36,7 @@ import {
 } from "../components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { toast } from "../components/ui/toast";
+import { useTranslation } from "../lib/i18n";
 import { ViewShell } from "./ViewShell";
 
 type Tab = "status" | "branch" | "history";
@@ -53,6 +54,7 @@ const STATUS_COLOR: Record<string, ChipColor> = {
 /** Git view: status + stage/unstage + diff, branch switching, history,
  *  and commit — all via git2 in the Rust core. */
 export default function GitView() {
+  const { t, dir } = useTranslation();
   const [tab, setTab] = useState<Tab>("status");
   const [diffs, setDiffs] = useState<FileDiff[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -131,20 +133,20 @@ export default function GitView() {
   return (
     <ViewShell
       icon={GitBranchIcon}
-      title="Git"
+      title={t("views.git.title")}
       description={error ? undefined : "status · branch · history"}
       padded={false}
       actions={
         <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
           <TabsList>
             <TabsTrigger value="status" className="gap-1">
-              <ListTodoIcon /> Status
+              <ListTodoIcon /> {t("views.git.tabs.status")}
             </TabsTrigger>
             <TabsTrigger value="branch" className="gap-1">
-              <GitBranchIcon /> Branch
+              <GitBranchIcon /> {t("views.git.tabs.branch")}
             </TabsTrigger>
             <TabsTrigger value="history" className="gap-1">
-              <HistoryIcon /> History
+              <HistoryIcon /> {t("views.git.tabs.history")}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -161,7 +163,7 @@ export default function GitView() {
           <>
             <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" onClick={() => void stageAll()}>
-                Stage all
+                {t("views.git.stage_all")}
               </Button>
               <Button
                 size="sm"
@@ -169,7 +171,7 @@ export default function GitView() {
                 onClick={() => void refresh()}
                 aria-label="Refresh"
               >
-                <RefreshCwIcon /> Refresh
+                <RefreshCwIcon /> {dir === "rtl" ? "تحديث" : "Refresh"}
               </Button>
               {selected && (
                 <Button
@@ -177,7 +179,7 @@ export default function GitView() {
                   variant="ghost"
                   onClick={() => setSelected(null)}
                 >
-                  <RotateCcwIcon /> Show all files
+                  <RotateCcwIcon /> {dir === "rtl" ? "عرض كل الملفات" : "Show all files"}
                 </Button>
               )}
               {result && <Badge variant="secondary">{result}</Badge>}
@@ -187,9 +189,9 @@ export default function GitView() {
               <div className="flex flex-1 items-center justify-center p-8 text-center">
                 <div className="flex flex-col items-center gap-2">
                   <CheckIcon className="size-8 text-muted-foreground/50" />
-                  <p className="text-sm font-medium">Working tree clean</p>
+                  <p className="text-sm font-medium">{t("views.git.no_changes")}</p>
                   <p className="text-xs text-muted-foreground">
-                    No changes to show — edit a file to see it here.
+                    {t("views.git.no_changes_desc")}
                   </p>
                 </div>
               </div>
@@ -197,10 +199,10 @@ export default function GitView() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>File</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{dir === "rtl" ? "الملف" : "File"}</TableHead>
+                    <TableHead>{dir === "rtl" ? "الحالة" : "Status"}</TableHead>
                     <TableHead className="text-right">+/-</TableHead>
-                    <TableHead className="w-32 text-right">Actions</TableHead>
+                    <TableHead className="w-32 text-right">{dir === "rtl" ? "الإجراءات" : "Actions"}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -238,7 +240,7 @@ export default function GitView() {
                             void stage(d.path);
                           }}
                         >
-                          Stage
+                          {t("views.git.stage")}
                         </Button>
                         <Button
                           size="xs"
@@ -248,7 +250,7 @@ export default function GitView() {
                             void unstage(d.path);
                           }}
                         >
-                          Unstage
+                          {t("views.git.unstage")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -270,12 +272,12 @@ export default function GitView() {
             <div className="flex gap-2">
               <Input
                 value={message}
-                placeholder="Commit message"
+                placeholder={t("views.git.commit_placeholder")}
                 onChange={(e) => setMessage(e.currentTarget.value)}
                 onKeyDown={(e) => e.key === "Enter" && message.trim() && commit()}
               />
               <Button disabled={!message.trim() || committing}>
-                {committing ? "Committing…" : "Commit"}
+                {committing ? t("common.loading") : t("views.git.commit_button")}
               </Button>
             </div>
           </>

@@ -1,0 +1,223 @@
+{
+  "app": {
+    "name": "Lexsus",
+    "tagline": "Your local bridge between a web AI and your codebase"
+  },
+  "common": {
+    "allow": "Allow",
+    "deny": "Deny",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Saved",
+    "waiting": "Waiting",
+    "running": "Running",
+    "idle": "Idle",
+    "inactive": "Inactive",
+    "close": "Close",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "copied": "Copied",
+    "copy": "Copy",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "read_only": "Read-only",
+    "read_write": "Read/write",
+    "offline": "Offline",
+    "online": "Online",
+    "switch_language": "عربي"
+  },
+  "onboarding": {
+    "hello": "hello",
+    "tagline": "Your local bridge between a web AI and your codebase.",
+    "get_started": "Get Started",
+    "skip_tour": "Skip tour",
+    "next": "Next",
+    "finish": "Finish",
+    "steps": [
+      {
+        "eyebrow": "Workspace",
+        "title": "Bind a project",
+        "desc": "Pick the folder your web AI will work on. Every file it reads or edits is resolved against it — nothing happens outside."
+      },
+      {
+        "eyebrow": "Live activity trace",
+        "title": "Watch every move",
+        "desc": "Reads, edits and commands stream in as they happen, so you always see exactly what the AI is doing and why."
+      },
+      {
+        "eyebrow": "Approvals",
+        "title": "Approve before it acts",
+        "desc": "Writes and shell commands pause for your call. Allow, deny, or grant for the session — you stay in control."
+      },
+      {
+        "eyebrow": "Git",
+        "title": "Review and commit",
+        "desc": "Inspect the diff, switch branches and commit the AI's work without ever leaving the workbench."
+      },
+      {
+        "eyebrow": "Handoff",
+        "title": "Continue anywhere",
+        "desc": "Package your progress into a clean handoff so another AI can pick up the thread without losing context."
+      },
+      {
+        "eyebrow": "Project memory",
+        "title": "Remember decisions",
+        "desc": "Facts, decisions and dead ends are saved across sessions, so nobody re-litigates the same problem twice."
+      },
+      {
+        "eyebrow": "Web-AI connector",
+        "title": "Connect your AI",
+        "desc": "Point your web AI at the local endpoint. It binds loopback only — read-only until you enable writes."
+      }
+    ]
+  },
+  "rail": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "hide_labels": "Hide the navigation labels.",
+    "show_labels": "Show the navigation labels and hints.",
+    "dark_theme": "Dark theme",
+    "light_theme": "Light theme",
+    "switch_light": "Switch to the light paper theme.",
+    "switch_dark": "Switch to the dark terminal theme.",
+    "project_connector": "Project & connector",
+    "project_connector_hint": "Pick a folder and set the web-AI endpoint.",
+    "connector_status": "Connector status",
+    "connector_listening_rw": "Connector · read/write",
+    "connector_listening_ro": "Connector · read-only",
+    "connector_offline": "Connector offline",
+    "status_rw_desc": "Listening · writes are allowed.",
+    "status_ro_desc": "Listening · reads only until enabled.",
+    "status_offline_desc": "The connector is not running locally."
+  },
+  "nav": {
+    "trace": {
+      "label": "Live activity trace",
+      "hint": "Watch every read, edit and command the web AI performs."
+    },
+    "git": {
+      "label": "Git",
+      "hint": "Review changes, switch branches and commit from here."
+    },
+    "handoff": {
+      "label": "Handoff",
+      "hint": "Package your progress to continue in another AI."
+    },
+    "memory": {
+      "label": "Project memory",
+      "hint": "Facts saved from past sessions: decisions and dead ends."
+    },
+    "bridge": {
+      "label": "Web-AI connector",
+      "hint": "The endpoint your web AI connects to, plus tool diagnostics."
+    }
+  },
+  "statusbar": {
+    "no_project": "no project",
+    "local": "local",
+    "web": "web",
+    "connector_rw": "connector · rw",
+    "connector_ro": "connector · ro",
+    "connector_offline": "connector offline",
+    "running": "running",
+    "idle": "idle",
+    "bridge_online": "bridge online"
+  },
+  "approvals": {
+    "web_ai_requests": "Web AI requests:",
+    "desktop_requests": "Desktop requests:",
+    "destructive_warning": "— this may destroy work",
+    "dont_ask_again": "Don't ask again for {grant} this session",
+    "commands": "commands",
+    "edits_under": "edits under {prefix}/",
+    "edits_in_project": "edits in this project"
+  },
+  "project_dialog": {
+    "title": "Project & connector",
+    "description": "Pick the folder the web AI works on, then point a connector at the local endpoint below.",
+    "working_directory": "Working directory",
+    "no_folders_yet": "No folders yet — browse to pick your first project.",
+    "browse_folder": "Browse folder…",
+    "connector": "Connector",
+    "endpoint": "Endpoint",
+    "status": "Status",
+    "listening": "listening",
+    "offline": "offline",
+    "active_workspace": "Active workspace",
+    "allowed_hosts": "Allowed hosts"
+  },
+  "views": {
+    "trace": {
+      "title": "Live activity trace",
+      "description": "grounded against the filesystem watcher · {count} events",
+      "no_activity_title": "No activity yet",
+      "no_activity_desc": "Let a web AI work on the project — its read, write and run steps appear here as they execute.",
+      "file_changed": "file changed on disk",
+      "earlier_steps": "{count} earlier steps · {files} files touched",
+      "collapse_older": "collapse older steps"
+    },
+    "bridge": {
+      "title": "Web-AI connector",
+      "description": "MCP endpoint · tool sandbox · audit trail (last {count})",
+      "mcp_connector": "MCP connector",
+      "endpoint": "Endpoint",
+      "workspace": "Workspace",
+      "no_project_bound": "no project bound",
+      "allowed_hosts": "Allowed hosts",
+      "allowed_hosts_hint": "A tunnel host must be listed here (via LEXSUS_MCP_ALLOWED_HOSTS), or its requests get a 403 that reads as a sign-in failure.",
+      "allow_writes": "Allow writes & commands",
+      "allow_writes_hint": "Off = read-only surface. Every write still needs your approval here, on the desktop.",
+      "tool_sandbox": "Tool sandbox (test read / write / run locally)",
+      "read": "Read",
+      "write": "Write",
+      "run": "Run",
+      "path_placeholder": "path",
+      "content_placeholder": "content",
+      "command_placeholder": "command",
+      "audit_trail": "Audit trail (last {count})",
+      "no_audit_events": "No tool calls yet — audit events will show here once tools are invoked."
+    },
+    "git": {
+      "title": "Git",
+      "description": "{branch} · {changes} uncommitted changes",
+      "tabs": {
+        "status": "Changes",
+        "branch": "Branches",
+        "history": "History"
+      },
+      "stage_all": "Stage all",
+      "unstage_all": "Unstage all",
+      "stage": "Stage",
+      "unstage": "Unstage",
+      "commit_placeholder": "Commit message…",
+      "commit_button": "Commit",
+      "no_changes": "Working tree clean",
+      "no_changes_desc": "No unstaged or staged changes found in the repository."
+    },
+    "memory": {
+      "title": "Project memory",
+      "description": "structured facts distilled across sessions",
+      "scan_button": "Refresh memory",
+      "objective": "Current Objective",
+      "decisions": "Decisions Made",
+      "failures": "Failed Attempts (Do Not Retry)",
+      "constraints": "Constraints & Guardrails",
+      "sessions": "Past Sessions",
+      "no_memory_yet": "No memory distilled yet. Click Refresh to scan Claude Code transcripts and past sessions."
+    },
+    "handoff": {
+      "title": "Handoff",
+      "description": "built from real trace + watcher state",
+      "objective_label": "Handoff Objective",
+      "copy_button": "Copy Handoff",
+      "copied_status": "Handoff copied — paste it into the web AI chat to continue",
+      "progress": "Progress",
+      "files_changed": "Files changed",
+      "errors_remaining": "Errors remaining",
+      "next_step": "Next step",
+      "files_involved": "Files involved"
+    }
+  }
+}

@@ -23,15 +23,11 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Switch } from "../components/ui/switch";
+import { useTranslation } from "../lib/i18n";
 import { ViewShell } from "./ViewShell";
 
-/**
- * Web-AI bridge view: the connector's live state (endpoint, bound
- * workspace, the read-only/write switch), a tool sandbox for testing
- * read/write/run locally, and the audit trail. Approval requests live in
- * the global banner — this view is diagnostics only.
- */
 export default function BridgeView() {
+  const { t } = useTranslation();
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [connector, setConnector] = useState<McpStatus | null>(null);
   const [readPath, setReadPath] = useState("src/App.tsx");
@@ -60,20 +56,20 @@ export default function BridgeView() {
   return (
     <ViewShell
       icon={GlobeIcon}
-      title="Web-AI connector"
-      description={`MCP endpoint · tool sandbox · audit trail (last ${audit.length})`}
+      title={t("views.bridge.title")}
+      description={t("views.bridge.description", { count: audit.length })}
     >
       <div className="flex flex-col gap-3">
         <Collapsible className="flex flex-col gap-2" defaultOpen>
           <CollapsibleTrigger className={sectionClass}>
-            MCP connector
+            {t("views.bridge.mcp_connector")}
             <ChevronDownIcon className="size-4 transition-transform data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0">
-            <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-surface-2/50 p-3">
+            <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-surface-2/50 p-3 text-start">
               <div className="flex items-center justify-between gap-3">
                 <span className="shrink-0 text-[11px] text-muted-foreground">
-                  Endpoint
+                  {t("views.bridge.endpoint")}
                 </span>
                 <code
                   className="truncate font-mono text-xs"
@@ -84,24 +80,22 @@ export default function BridgeView() {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="shrink-0 text-[11px] text-muted-foreground">
-                  Workspace
+                  {t("views.bridge.workspace")}
                 </span>
                 <span
                   className="truncate font-mono text-xs"
                   title={connector?.workspace ?? ""}
                 >
-                  {connector?.workspace ?? "no project bound"}
+                  {connector?.workspace ?? t("views.bridge.no_project_bound")}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 flex-col">
                   <span className="shrink-0 text-[11px] text-muted-foreground">
-                    Allowed hosts
+                    {t("views.bridge.allowed_hosts")}
                   </span>
                   <span className="text-[11px] leading-relaxed text-muted-foreground">
-                    A tunnel host must be listed here (via
-                    LEXSUS_MCP_ALLOWED_HOSTS), or its requests get a 403 that
-                    reads as a sign-in failure.
+                    {t("views.bridge.allowed_hosts_hint")}
                   </span>
                 </div>
                 <code
@@ -114,11 +108,10 @@ export default function BridgeView() {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 flex-col">
                   <span className="text-xs font-medium">
-                    Allow writes &amp; commands
+                    {t("views.bridge.allow_writes")}
                   </span>
                   <span className="text-[11px] leading-relaxed text-muted-foreground">
-                    Off = read-only surface. Every write still needs your
-                    approval here, on the desktop.
+                    {t("views.bridge.allow_writes_hint")}
                   </span>
                 </div>
                 <Switch
@@ -135,7 +128,7 @@ export default function BridgeView() {
 
         <Collapsible className="flex flex-col gap-2">
           <CollapsibleTrigger className={sectionClass}>
-            Tool sandbox (test read / write / run locally)
+            {t("views.bridge.tool_sandbox")}
             <ChevronDownIcon className="size-4 transition-transform data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0">
@@ -158,7 +151,7 @@ export default function BridgeView() {
                       void sandboxRun({ ReadFile: { path: readPath } })
                     }
                   >
-                    Read
+                    {t("views.bridge.read")}
                   </Button>
                 </div>
               </div>
@@ -169,13 +162,13 @@ export default function BridgeView() {
                 <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-end">
                   <Input
                     value={writePath}
-                    placeholder="path"
+                    placeholder={t("views.bridge.path_placeholder")}
                     onChange={(e) => setWritePath(e.currentTarget.value)}
                     className="min-w-0 flex-1 font-mono text-xs"
                   />
                   <Input
                     value={writeContent}
-                    placeholder="content"
+                    placeholder={t("views.bridge.content_placeholder")}
                     onChange={(e) => setWriteContent(e.currentTarget.value)}
                     className="min-w-0 flex-[2] font-mono text-xs"
                   />
@@ -189,7 +182,7 @@ export default function BridgeView() {
                       })
                     }
                   >
-                    Write
+                    {t("views.bridge.write")}
                   </Button>
                 </div>
               </div>
@@ -200,6 +193,7 @@ export default function BridgeView() {
                 <div className="flex min-w-0 flex-1 items-end gap-2">
                   <Input
                     value={command}
+                    placeholder={t("views.bridge.command_placeholder")}
                     onChange={(e) => setCommand(e.currentTarget.value)}
                     className="min-w-0 flex-1 font-mono text-xs"
                   />
@@ -211,7 +205,7 @@ export default function BridgeView() {
                       void sandboxRun({ RunCommand: { command } })
                     }
                   >
-                    Run
+                    {t("views.bridge.run")}
                   </Button>
                 </div>
               </div>
@@ -235,14 +229,14 @@ export default function BridgeView() {
 
         <Collapsible className="flex flex-col gap-2">
           <CollapsibleTrigger className={sectionClass}>
-            Audit trail (last {audit.length})
+            {t("views.bridge.audit_trail", { count: audit.length })}
             <ChevronDownIcon className="size-4 transition-transform data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0">
             <ScrollArea className="h-40 min-h-0 rounded-lg border border-border/60 bg-surface-2/50 p-3">
               {audit.length === 0 ? (
                 <p className="text-xs text-muted-foreground">
-                  No tool calls recorded yet.
+                  {t("views.bridge.no_audit_events")}
                 </p>
               ) : (
                 <ul className="flex flex-col gap-1">

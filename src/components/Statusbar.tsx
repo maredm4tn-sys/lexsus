@@ -11,6 +11,7 @@ import type {
 } from "../lib/types";
 import { useTauriEvent } from "../hooks/useTauriEvent";
 import { cn } from "../lib/utils";
+import { useTranslation } from "../lib/i18n";
 
 function stateColor(state: string): string {
   switch (state) {
@@ -32,16 +33,12 @@ interface StatusbarProps {
   status: FailoverStatus | null;
 }
 
-/**
- * Workbench statusbar: project path, failover state machines, the MCP
- * connector endpoint and the live terminal indicator — the app's quiet
- * heartbeat.
- */
 export default function Statusbar({
   projectRoot,
   connector,
   status,
 }: StatusbarProps) {
+  const { t } = useTranslation();
   const [running, setRunning] = useState(false);
 
   useTauriEvent<TerminalRunEvent>("terminal://run", (payload) => {
@@ -57,20 +54,20 @@ export default function Statusbar({
       <span className="flex min-w-0 items-center gap-1.5">
         <FolderIcon className="size-3 shrink-0" />
         <span className="truncate font-mono" title={projectRoot}>
-          {projectRoot ? projectRoot.split(/[\\/]/).pop() : "no project"}
+          {projectRoot ? projectRoot.split(/[\\/]/).pop() : t("statusbar.no_project")}
         </span>
       </span>
 
       <span className="flex items-center gap-1">
-        local
+        {t("statusbar.local")}
         <span className={cn("font-medium", stateColor(local))}>{local}</span>
       </span>
       <span className="flex items-center gap-1">
-        web
+        {t("statusbar.web")}
         <span className={cn("font-medium", stateColor(web))}>{web}</span>
       </span>
 
-      <span className="ml-auto flex items-center gap-1.5">
+      <span className="ms-auto flex items-center gap-1.5">
         <span
           className={cn(
             "size-1.5 rounded-full",
@@ -79,19 +76,19 @@ export default function Statusbar({
         />
         {connector?.listening
           ? connector.allow_write
-            ? "connector · rw"
-            : "connector · ro"
-          : "connector offline"}
+            ? t("statusbar.connector_rw")
+            : t("statusbar.connector_ro")
+          : t("statusbar.connector_offline")}
       </span>
       <span className="flex items-center gap-1.5">
         <SquareTerminalIcon className="size-3" />
         <span className={cn(running && "text-success")}>
-          {running ? "running" : "idle"}
+          {running ? t("statusbar.running") : t("statusbar.idle")}
         </span>
       </span>
       <span className="flex items-center gap-1.5">
         <RadioIcon className="size-3" />
-        bridge online
+        {t("statusbar.bridge_online")}
       </span>
     </footer>
   );

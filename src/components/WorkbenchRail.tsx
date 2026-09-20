@@ -14,6 +14,7 @@ import {
 import { toggleTheme, useTheme } from "../hooks/useTheme";
 import type { McpStatus } from "../lib/types";
 import { cn } from "../lib/utils";
+import { useTranslation } from "../lib/i18n";
 import {
   Tooltip,
   TooltipContent,
@@ -24,40 +25,40 @@ export type View = "trace" | "git" | "handoff" | "memory" | "bridge";
 
 const RAIL_KEY = "lexsus.railOpen";
 
-const NAV: {
+const NAV_ITEMS: {
   view: View;
-  label: string;
-  hint: string;
+  labelKey: string;
+  hintKey: string;
   icon: typeof ActivityIcon;
 }[] = [
   {
     view: "trace",
-    label: "Live activity trace",
-    hint: "Watch every read, edit and command the web AI performs.",
+    labelKey: "nav.trace.label",
+    hintKey: "nav.trace.hint",
     icon: ActivityIcon,
   },
   {
     view: "git",
-    label: "Git",
-    hint: "Review changes, switch branches and commit from here.",
+    labelKey: "nav.git.label",
+    hintKey: "nav.git.hint",
     icon: GitBranchIcon,
   },
   {
     view: "handoff",
-    label: "Handoff",
-    hint: "Package your progress to continue in another AI.",
+    labelKey: "nav.handoff.label",
+    hintKey: "nav.handoff.hint",
     icon: MessageCircleIcon,
   },
   {
     view: "memory",
-    label: "Project memory",
-    hint: "Facts saved from past sessions: decisions and dead ends.",
+    labelKey: "nav.memory.label",
+    hintKey: "nav.memory.hint",
     icon: BrainIcon,
   },
   {
     view: "bridge",
-    label: "Web-AI connector",
-    hint: "The endpoint your web AI connects to, plus tool diagnostics.",
+    labelKey: "nav.bridge.label",
+    hintKey: "nav.bridge.hint",
     icon: GlobeIcon,
   },
 ];
@@ -69,19 +70,13 @@ interface WorkbenchRailProps {
   onOpenProject: () => void;
 }
 
-/**
- * Left rail of the workbench: a collapsible sidebar. Icons sit in a
- * fixed-width slot that matches the collapsed rail, so they never move
- * while the rail animates — the labels slide in beside them. The
- * hover/selected highlight is an inset pill that slides in from the
- * edges in sync with the rail width.
- */
 export default function WorkbenchRail({
   view,
   onViewChange,
   connector,
   onOpenProject,
 }: WorkbenchRailProps) {
+  const { t, dir } = useTranslation();
   const [open, setOpen] = useState(
     () => localStorage.getItem(RAIL_KEY) === "1",
   );
@@ -91,23 +86,18 @@ export default function WorkbenchRail({
     localStorage.setItem(RAIL_KEY, open ? "1" : "0");
   }, [open]);
 
-  /** Label reveal: 0fr → 1fr grid track + fade, synced with the rail width. */
   const reveal = cn(
-    "grid min-w-0 flex-1 overflow-hidden whitespace-nowrap text-xs font-medium text-left transition-[grid-template-columns,opacity] duration-300 ease-out",
+    "grid min-w-0 flex-1 overflow-hidden whitespace-nowrap text-xs font-medium text-start transition-[grid-template-columns,opacity] duration-300 ease-out",
     open ? "grid-cols-[1fr] opacity-100" : "grid-cols-[0fr] opacity-0",
   );
-  const revealInner = "col-start-1 row-start-1 min-w-0 truncate pr-3";
+  const revealInner = cn(
+    "col-start-1 row-start-1 min-w-0 truncate",
+    dir === "rtl" ? "pl-3" : "pr-3",
+  );
 
-  /** Fixed icon slot: exactly the collapsed rail width, so the icon
-   *  position is identical whether the rail is open or closed. */
   const iconSlot =
     "relative z-10 flex w-13 shrink-0 items-center justify-center [&_svg]:size-4";
 
-  /**
-   * Highlight pill behind a row: always inset with a margin, so it reads
-   * as a rounded square behind the icon when collapsed and a pill over
-   * icon + label when expanded.
-   */
   const pill = "absolute inset-y-0 left-2 right-2 rounded-lg";
 
   const rowBase =
@@ -161,9 +151,9 @@ export default function WorkbenchRail({
       <Tooltip key={id} disabled={open}>
         <TooltipTrigger delay={200} render={button} />
         <TooltipContent
-          side="right"
+          side={dir === "rtl" ? "left" : "right"}
           sideOffset={10}
-          className="max-w-60 flex-col items-start gap-0.5"
+          className="max-w-60 flex-col items-start gap-0.5 text-start"
         >
           <span className="font-medium">{label}</span>
           <span className="text-background/70">{hint}</span>
@@ -171,6 +161,9 @@ export default function WorkbenchRail({
       </Tooltip>
     );
   }
+
+  const collapseText = open ? t("rail.collapse") : t("rail.expand");
+  const collapseHint = open ? t("rail.hide_labels") : t("rail.show_labels");
 
   return (
     <nav
@@ -180,10 +173,9 @@ export default function WorkbenchRail({
         open ? "w-56" : "w-13",
       )}
     >
-      {/* Toggle: plain icon once the sidebar is open — no background. */}
       <button
         type="button"
-        aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+        aria-label={collapseText}
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className={cn(
@@ -198,16 +190,20 @@ export default function WorkbenchRail({
           />
         )}
         <span className={iconSlot}>
-          {open ? <PanelLeftCloseIcon /> : <PanelLeftIcon />}
+          {open ? (
+            <PanelLeftCloseIcon className={dir === "rtl" ? "rotate-180" : ""} />
+          ) : (
+            <PanelLeftIcon className={dir === "rtl" ? "rotate-180" : ""} />
+          )}
         </span>
       </button>
 
       <div className="flex flex-col gap-0.5">
-        {NAV.map(({ view: v, label, hint, icon }) =>
+        {NAV_ITEMS.map(({ view: v, labelKey, hintKey, icon }) =>
           renderRow({
             id: v,
-            label,
-            hint,
+            label: t(labelKey),
+            hint: t(hintKey),
             icon,
             active: view === v,
             onClick: () => onViewChange(v),
@@ -219,98 +215,98 @@ export default function WorkbenchRail({
 
       <div className="flex flex-col gap-0.5">
         <Tooltip disabled={open}>
-          <TooltipTrigger delay={200} render={
-            <button
-              type="button"
-              aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
-              aria-expanded={open}
-              onClick={() => setOpen((o) => !o)}
-              className={cn(
-                rowBase,
-                "group mb-2 text-muted-foreground hover:text-foreground",
-              )}
-            />
-          }>
-          </TooltipTrigger>
+          <TooltipTrigger
+            delay={200}
+            render={
+              <button
+                type="button"
+                aria-label={collapseText}
+                aria-expanded={open}
+                onClick={() => setOpen((o) => !o)}
+                className={cn(
+                  rowBase,
+                  "group mb-2 text-muted-foreground hover:text-foreground",
+                )}
+              />
+            }
+          />
           <TooltipContent
-            side="right"
+            side={dir === "rtl" ? "left" : "right"}
             sideOffset={10}
-            className="max-w-40 flex-col items-start gap-0.5"
+            className="max-w-40 flex-col items-start gap-0.5 text-start"
           >
-            <span className="font-medium">
-              {open ? "Collapse sidebar" : "Expand sidebar"}
-            </span>
-            <span className="text-background/70">
-              {open
-                ? "Hide the navigation labels."
-                : "Show the navigation labels and hints."}
-            </span>
+            <span className="font-medium">{collapseText}</span>
+            <span className="text-background/70">{collapseHint}</span>
           </TooltipContent>
         </Tooltip>
 
         {renderRow({
           id: "theme",
-          label: theme === "dark" ? "Dark theme" : "Light theme",
-          hint: theme === "dark"
-            ? "Switch to the light paper theme."
-            : "Switch to the dark terminal theme.",
+          label: theme === "dark" ? t("rail.dark_theme") : t("rail.light_theme"),
+          hint:
+            theme === "dark"
+              ? t("rail.switch_light")
+              : t("rail.switch_dark"),
           icon: theme === "dark" ? MoonIcon : SunIcon,
           onClick: toggleTheme,
         })}
 
         {renderRow({
           id: "project",
-          label: "Project & connector",
-          hint: "Pick a folder and set the web-AI endpoint.",
+          label: t("rail.project_connector"),
+          hint: t("rail.project_connector_hint"),
           icon: FolderOpenIcon,
           onClick: onOpenProject,
         })}
 
         <Tooltip>
-          <TooltipTrigger delay={200} render={
-            <span
-              aria-label={
-                connector?.listening
-                  ? "MCP connector listening"
-                  : "MCP connector offline"
-              }
-              className="relative flex h-9 w-full items-center text-xs text-muted-foreground"
-            >
-              <span className={iconSlot}>
-                <span
-                  className={cn(
-                    "size-2 rounded-full",
-                    connector?.listening
+          <TooltipTrigger
+            delay={200}
+            render={
+              <span
+                aria-label={
+                  connector?.listening
+                    ? t("rail.connector_status")
+                    : t("rail.connector_offline")
+                }
+                className="relative flex h-9 w-full items-center text-xs text-muted-foreground"
+              >
+                <span className={iconSlot}>
+                  <span
+                    className={cn(
+                      "size-2 rounded-full",
+                      connector?.listening
+                        ? connector.allow_write
+                          ? "bg-warning anim-pulse"
+                          : "bg-success anim-pulse"
+                        : "bg-muted-foreground/40",
+                    )}
+                  />
+                </span>
+                <span className={cn(reveal, "relative z-10 font-normal")}>
+                  <span className={revealInner}>
+                    {connector?.listening
                       ? connector.allow_write
-                        ? "bg-warning anim-pulse"
-                        : "bg-success anim-pulse"
-                      : "bg-muted-foreground/40",
-                  )}
-                />
-              </span>
-              <span className={cn(reveal, "relative z-10 font-normal")}>
-                <span className={revealInner}>
-                  {connector?.listening
-                    ? connector.allow_write
-                      ? "Connector · read/write"
-                      : "Connector · read-only"
-                    : "Connector offline"}
+                        ? t("rail.connector_listening_rw")
+                        : t("rail.connector_listening_ro")
+                      : t("rail.connector_offline")}
+                  </span>
                 </span>
               </span>
-            </span>
-          } />
+            }
+          />
           <TooltipContent
-            side="right"
+            side={dir === "rtl" ? "left" : "right"}
             sideOffset={10}
-            className="max-w-52 flex-col items-start gap-0.5"
+            className="max-w-52 flex-col items-start gap-0.5 text-start"
           >
-            <span className="font-medium">Connector status</span>
+            <span className="font-medium">{t("rail.connector_status")}</span>
             <span className="text-background/70">
               {connector?.listening
                 ? connector.allow_write
-                  ? "Listening · writes are allowed."
-                  : "Listening · reads only until enabled."
-                : "The connector is not running locally."}
+                  ? t("rail.status_rw_desc")
+                  : t("rail.status_ro_desc")
+                : t("rail.status_offline_desc")}
             </span>
           </TooltipContent>
         </Tooltip>

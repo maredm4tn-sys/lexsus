@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ShieldAlertIcon, Trash2Icon } from "lucide-react";
 import type { Approval } from "../hooks/useApprovals";
 import { Button } from "./ui/button";
+import { useTranslation } from "../lib/i18n";
 
 interface ApprovalBannerProps {
   approvals: Approval[];
@@ -12,26 +13,22 @@ interface ApprovalBannerProps {
   ) => void;
 }
 
-/** The label for a grant offer: "edits under src/" or "commands". */
-function grantLabel(scope: string, prefix: string | null): string {
-  if (scope === "commands") return "commands";
-  return prefix ? `edits under ${prefix}/` : "edits in this project";
-}
-
-/**
- * Global approval gate: when a web AI wants to write a file or run a
- * command, this banner sits above everything until you allow or deny it.
- * Destructive calls (delete, move) render as danger and show exactly what
- * disappears; grantable calls can be promoted to a session grant.
- */
 export default function ApprovalBanner({
   approvals,
   onDecide,
 }: ApprovalBannerProps) {
+  const { t } = useTranslation();
   // Which cards have their "don't ask again" box ticked, by approval id.
   const [grantWanted, setGrantWanted] = useState<Record<number, boolean>>({});
 
   if (approvals.length === 0) return null;
+
+  function formatGrant(scope: string, prefix: string | null): string {
+    if (scope === "commands") return t("approvals.commands");
+    return prefix
+      ? t("approvals.edits_under", { prefix })
+      : t("approvals.edits_in_project");
+  }
 
   return (
     <div className="flex shrink-0 flex-col gap-1.5 border-b border-warning/30 bg-warning/10 px-4 py-2.5 anim-fade-down">
@@ -53,14 +50,16 @@ export default function ApprovalBanner({
               <span
                 className={`font-semibold ${a.destructive ? "text-danger" : "text-warning"}`}
               >
-                {a.source === "mcp" ? "Web AI" : "Desktop"} requests:
+                {a.source === "mcp"
+                  ? t("approvals.web_ai_requests")
+                  : t("approvals.desktop_requests")}
               </span>{" "}
               <span className="font-mono text-xs">
                 {a.summary}
               </span>
               {a.destructive && (
-                <span className="ml-1.5 text-danger">
-                  — this may destroy work
+                <span className="mx-1.5 text-danger">
+                  {t("approvals.destructive_warning")}
                 </span>
               )}
             </p>
@@ -77,8 +76,9 @@ export default function ApprovalBanner({
                     }))
                   }
                 />
-                Don't ask again for{" "}
-                {grantLabel(grant.scope, grant.suggested_prefix)} this session
+                {t("approvals.dont_ask_again", {
+                  grant: formatGrant(grant.scope, grant.suggested_prefix),
+                })}
               </label>
             )}
             <div className="flex gap-1.5">
@@ -99,7 +99,7 @@ export default function ApprovalBanner({
                   )
                 }
               >
-                Allow
+                {t("common.allow")}
               </Button>
               <Button
                 size="sm"
@@ -107,7 +107,7 @@ export default function ApprovalBanner({
                 disabled={a.resolving}
                 onClick={() => onDecide(a.id, false)}
               >
-                Deny
+                {t("common.deny")}
               </Button>
             </div>
           </div>

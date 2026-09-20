@@ -15,6 +15,7 @@ import { useTauriEvent } from "../hooks/useTauriEvent";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { cn } from "../lib/utils";
+import { useTranslation } from "../lib/i18n";
 import { ViewShell } from "./ViewShell";
 
 interface TraceItem extends TraceStep {
@@ -31,10 +32,8 @@ const ICONS: Record<string, ReactNode> = {
   fs: <FileIcon />,
 };
 
-/** Live activity trace view: web-AI tool steps + watcher grounding.
- *  Newest 3 expanded, older collapse into a summary line you can click to
- *  expand. */
 export default function TraceView() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<TraceItem[]>([]);
   const [collapsed, setCollapsed] = useState(true);
   const idRef = useRef(0);
@@ -76,7 +75,6 @@ export default function TraceView() {
     ]);
   });
 
-  // Keep the list bounded (last 500).
   const visible = items.slice(-500);
   const expanded = collapsed ? visible.slice(-3) : visible;
   const earlier = visible.slice(0, Math.max(0, visible.length - 3));
@@ -88,7 +86,7 @@ export default function TraceView() {
     const icon = ICONS[it.kind] ?? <CircleIcon />;
     const label =
       it.kind === "fs"
-        ? "file changed on disk"
+        ? t("views.trace.file_changed")
         : it.kind === "test" || it.kind === "error"
           ? (it.detail ?? "")
           : it.file ?? it.command ?? "";
@@ -109,14 +107,14 @@ export default function TraceView() {
             <Badge
               className="border-success/30 bg-success/10 text-success transition-colors duration-200"
             >
-              <CheckIcon /> saved
+              <CheckIcon /> {t("common.saved")}
             </Badge>
           ) : (
             <Badge
               variant="outline"
               className="text-warning transition-colors duration-200"
             >
-              waiting
+              {t("common.waiting")}
             </Badge>
           ))}
         {it.kind === "running" && (
@@ -139,17 +137,16 @@ export default function TraceView() {
   return (
     <ViewShell
       icon={ActivityIcon}
-      title="Live activity trace"
-      description={`grounded against the filesystem watcher · ${visible.length} events`}
+      title={t("views.trace.title")}
+      description={t("views.trace.description", { count: visible.length })}
     >
       {visible.length === 0 ? (
         <div className="flex flex-1 items-center justify-center p-8 text-center">
           <div className="flex flex-col items-center gap-2">
             <ActivityIcon className="size-8 text-muted-foreground/50" />
-            <p className="text-sm font-medium">No activity yet</p>
+            <p className="text-sm font-medium">{t("views.trace.no_activity_title")}</p>
             <p className="max-w-56 text-xs leading-relaxed text-muted-foreground">
-              Let a web AI work on the project — its read, write and run steps
-              appear here as they execute.
+              {t("views.trace.no_activity_desc")}
             </p>
           </div>
         </div>
@@ -163,7 +160,7 @@ export default function TraceView() {
                 onClick={() => setCollapsed(false)}
                 className="text-muted-foreground"
               >
-                {earlier.length} earlier steps · {filesTouched} files touched
+                {t("views.trace.earlier_steps", { count: earlier.length, files: filesTouched })}
               </Button>
             </li>
           )}
@@ -176,7 +173,7 @@ export default function TraceView() {
                 onClick={() => setCollapsed(true)}
                 className="text-muted-foreground"
               >
-                collapse older steps
+                {t("views.trace.collapse_older")}
               </Button>
             </li>
           )}
