@@ -28,6 +28,22 @@
     "online": "Online",
     "switch_language": "عربي"
   },
+  "terminal": {
+    "title": "Terminal",
+    "running": "web AI running a command",
+    "idle": "idle",
+    "placeholder": "[commands the web AI runs appear here]"
+  },
+  "failover": {
+    "dismiss": "Dismiss",
+    "keep_working": "Keep working",
+    "local_idle": "Your local terminal has been idle — if you stopped working, the bridge can continue automatically.",
+    "interrupted_handoff": "Local session interrupted — continue from the Handoff view",
+    "interrupted_auto": "Local session interrupted — auto-continued on the web AI",
+    "after_idle": "after {time}",
+    "web_session_lost": "Web AI session lost ({reason})",
+    "pickup_handoff": "pick the work back up from the Handoff view"
+  },
   "onboarding": {
     "hello": "hello",
     "tagline": "Your local bridge between a web AI and your codebase.",

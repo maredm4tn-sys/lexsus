@@ -6,6 +6,7 @@ import "@xterm/xterm/css/xterm.css";
 import { SquareTerminalIcon } from "lucide-react";
 import type { TerminalRunEvent } from "../lib/types";
 import { useTheme } from "../hooks/useTheme";
+import { useTranslation } from "../lib/i18n";
 import { cn } from "../lib/utils";
 
 /** xterm needs concrete values; these mirror the --terminal tokens. */
@@ -21,6 +22,7 @@ const TERMINAL_THEMES = {
  * approval cards (the global banner) are the control point.
  */
 export default function TerminalPane() {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const [running, setRunning] = useState(false);
@@ -46,7 +48,7 @@ export default function TerminalPane() {
     term.loadAddon(fit);
     term.open(container);
     fit.fit();
-    term.writeln("\x1b[90m[commands the web AI runs appear here]\x1b[0m");
+    term.writeln("\x1b[90m" + t("terminal.placeholder") + "\x1b[0m");
 
     const ro = new ResizeObserver(() => fit.fit());
     ro.observe(container);
@@ -86,7 +88,7 @@ export default function TerminalPane() {
       term.dispose();
       termRef.current = null;
     };
-  }, []);
+  }, [t]);
 
   // xterm can't read CSS vars — swap concrete hex values when the theme flips.
   useEffect(() => {
@@ -99,15 +101,15 @@ export default function TerminalPane() {
     <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
       <header className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-2.5">
         <SquareTerminalIcon className="size-4 shrink-0 text-muted-foreground" />
-        <h2 className="text-sm font-semibold">Terminal</h2>
-        <span className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground">
+        <h2 className="text-sm font-semibold">{t("terminal.title")}</h2>
+        <span className="ms-auto flex items-center gap-1.5 text-xs text-muted-foreground">
           <span
             className={cn(
               "size-1.5 rounded-full",
               running ? "animate-pulse bg-success" : "bg-muted-foreground/40",
             )}
           />
-          {running ? "web AI running a command" : "idle"}
+          {running ? t("terminal.running") : t("common.idle")}
         </span>
       </header>
       <div className="min-h-0 flex-1 p-2">
